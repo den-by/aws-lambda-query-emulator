@@ -2,4 +2,3 @@ node_modules/
 .idea
 .npmignore
 .git*\
-package-lock.json
