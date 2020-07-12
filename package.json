@@ -1,0 +1,26 @@
+{
+  "name": "a1develops-graphql-loader",
+  "version": "1.0.17",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@graphql-tools/graphql-file-loader": "^6.0.11",
+    "@graphql-tools/load": "^6.0.11",
+    "@graphql-tools/schema": "^6.0.11",
+    "apollo-server": "^2.15.1",
+    "apollo-server-express": "^2.15.1",
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "graphql": "^15.1.0",
+    "minimist": "^1.2.5",
+    "yaml": "^1.10.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
+  }
+}
