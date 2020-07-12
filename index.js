@@ -13,7 +13,7 @@ module.exports.addResolversToSchema = require('@graphql-tools/schema').addResolv
 let contextAdapterCreate = function () {
     const fs = require('fs');
     const argv = require('minimist')(process.argv.slice(2));
-    const  rootDir = process.cwd();
+    const rootDir = "D:\\qittiq\\app-sync";
     const contextPatch = argv['userType'] === 'purchaser' ? 'tests/test_create_purchaser.json' : 'tests/test_create_user.json';
     const contextJsonString = fs.readFileSync(rootDir+'/'+contextPatch);
 
@@ -36,7 +36,7 @@ module.exports.contextAdapterCreate = contextAdapterCreate
 
 
 let addResolversToSchemas = function (contextAdapter){
-    const  rootDir = process.cwd()
+    const  rootDir = 'D:\\qittiq\\app-sync'
     const fs = require('fs');
     const serverlessString = fs.readFileSync(rootDir+'/serverless.yml', 'utf8');
     const serverless = require('yaml').parse(serverlessString);
