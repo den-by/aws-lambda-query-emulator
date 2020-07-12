@@ -1,5 +1,5 @@
-const defValue = {port: 8080};
-module.exports.ApolloServer = function (schema, port = defValue.port) {
+const config = {port: 8080};
+module.exports.ApolloServer = function (schema, port = config.port) {
     const ApolloServer = require('apollo-server').ApolloServer
     const server = new ApolloServer({
         schema,
@@ -12,7 +12,7 @@ module.exports.ApolloServer = function (schema, port = defValue.port) {
     });
 }
 
-module.exports.express = function (schema, port = defValue.port) {
+module.exports.express = function (schema, port = config.port) {
 
     const express = require('express');
     const graphqlHTTP = require('express-graphql');
@@ -31,7 +31,7 @@ module.exports.express = function (schema, port = defValue.port) {
     console.log(`🚀 Server ready at http://localhost:${port}`)
 }
 
-module.exports.expressApollo = function (schema, port = defValue.port) {
+module.exports.expressApollo = function (schema, port = config.port) {
     const express = require('express');
     const {ApolloServer} = require('apollo-server-express');
     const app = express();

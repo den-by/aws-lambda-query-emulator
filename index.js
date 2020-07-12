@@ -1,27 +1,16 @@
 const {loadSchemaSync} = require('@graphql-tools/load');
 const {GraphQLFileLoader} = require('@graphql-tools/graphql-file-loader');
 const {addResolversToSchema} = require('@graphql-tools/schema');
-// const {ApolloServer, express,expressApollo } = require ('apollo-server-express');
-// module.exports.graphql = require('graphql')
-// const ApolloServer = require('apollo-server').ApolloServer
 
-// const {ApolloServer, express,expressApollo } = require('./server');
-
-module.exports.server = require('./server');
+let server = require('./server');
+module.exports.server = server;
 module.exports.yaml = require('yaml');
 module.exports.loadSchemaSync = require('@graphql-tools/load').loadSchemaSync;
 module.exports.GraphQLFileLoader = require('@graphql-tools/graphql-file-loader').GraphQLFileLoader;
 module.exports.addResolversToSchema = require('@graphql-tools/schema').addResolversToSchema;
-// module.exports.ApolloServer = ApolloServer;
-// module.exports.express = express;
-// module.exports.expressApollo = expressApollo;
 
 
-
-// const sdfsd = __dirname;
-
-
-module.exports.contextAdapterCreate = function () {
+let contextAdapterCreate = function () {
     const fs = require('fs');
     const argv = require('minimist')(process.argv.slice(2));
     const  rootDir = process.cwd();
@@ -42,10 +31,11 @@ module.exports.contextAdapterCreate = function () {
         return previous;
     }, {});
     return contextAdapter
-}
+};
+module.exports.contextAdapterCreate = contextAdapterCreate
 
 
-module.exports.addResolversToSchemas = function (contextAdapter){
+let addResolversToSchemas = function (contextAdapter){
     const  rootDir = process.cwd()
     const fs = require('fs');
     const serverlessString = fs.readFileSync(rootDir+'/serverless.yml', 'utf8');
@@ -90,4 +80,12 @@ module.exports.addResolversToSchemas = function (contextAdapter){
     });
     return schemaWithResolvers;
 
+};
+module.exports.addResolversToSchemas = addResolversToSchemas
+
+module.exports.startServer = function () {
+
+    const context = contextAdapterCreate()
+    const schemaWithResolvers = addResolversToSchemas(context);
+    server.expressApollo(schemaWithResolvers);
 }
