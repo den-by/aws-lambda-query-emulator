@@ -16,11 +16,10 @@
     "apollo-server-express": "^2.15.1",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
-    "graphql": "^15.1.0",
+    "graphql": "^15.3.0",
     "minimist": "^1.2.5",
-    "yaml": "^1.10.0"
-  },
-  "devDependencies": {
+    "yaml": "^1.10.0",
     "dotenv": "^8.2.0"
-  }
+  },
+  "devDependencies": {}
 }
