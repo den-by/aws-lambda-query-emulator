@@ -1,43 +1,26 @@
 const {loadSchemaSync} = require('@graphql-tools/load');
 const {GraphQLFileLoader} = require('@graphql-tools/graphql-file-loader');
 const {addResolversToSchema} = require('@graphql-tools/schema');
+const server = require('./server');
+const fs = require('fs');
+const argv = require('minimist')(process.argv.slice(2));
+const rootDir = argv['rootDir'];
+require('dotenv').config({path: rootDir + '/config/env/.env.test'});
 
-let server = require('./server');
-module.exports.server = server;
-module.exports.yaml = require('yaml');
-module.exports.loadSchemaSync = require('@graphql-tools/load').loadSchemaSync;
-module.exports.GraphQLFileLoader = require('@graphql-tools/graphql-file-loader').GraphQLFileLoader;
-module.exports.addResolversToSchema = require('@graphql-tools/schema').addResolversToSchema;
-
-let contextAdapterCreate = function () {
-    const fs = require('fs');
-    const argv = require('minimist')(process.argv.slice(2));
-    const rootDir = "D:\\qittiq\\app-sync";
+const getContext = function () {
     const contextPatch = argv['userType'] === 'purchaser' ? 'tests/test_create_purchaser.json' : 'tests/test_create_user.json';
-    const contextJsonString = fs.readFileSync(rootDir+'/'+contextPatch);
-
-    require('dotenv').config({path: rootDir+'/config/env/.env.test'});
+    const contextJsonString = fs.readFileSync(rootDir + '/' + contextPatch);
     const context = JSON.parse(String(contextJsonString));
-    const {availableParameters} = require(rootDir+'/helper/context/context.js');
-    const contextAdapter = Object.keys(context).reduce(function (previous, key) {
-        if (availableParameters[key]) {
-            let newKey = availableParameters[key];
-            previous[newKey] = context[key];
-        } else {
-            previous[key] = context[key];
-        }
+    const snakeCase = require('lodash.snakecase');
 
-        return previous;
-    }, {});
-    return contextAdapter
+    return Object.entries(context).reduce((total, item) => {
+        total[snakeCase(item[0])] = item[1];
+        return total
+    }, {})
 };
-module.exports.contextAdapterCreate = contextAdapterCreate
 
-
-let addResolversToSchemas = function (contextAdapter){
-    const  rootDir = 'D:\\qittiq\\app-sync'
-    const fs = require('fs');
-    const serverlessString = fs.readFileSync(rootDir+'/serverless.yml', 'utf8');
+const addResolversToSchemas = function (context) {
+    const serverlessString = fs.readFileSync(rootDir + '/serverless.yml', 'utf8');
     const serverless = require('yaml').parse(serverlessString);
     const mapping = serverless.custom['appSync']['mappingTemplates'];
 
@@ -46,7 +29,7 @@ let addResolversToSchemas = function (contextAdapter){
     let resolversFunctions = {};
     fs.readdirSync(normalizedPath).forEach(function (dir) {
         fs.readdirSync(path.join(normalizedPath, dir)).forEach(function (file) {
-            const patch = normalizedPath+'/' + dir + '/' + file;
+            const patch = normalizedPath + '/' + dir + '/' + file;
             try {
                 resolversFunctions = {...resolversFunctions, ...require(patch)};
             } catch (e) {
@@ -60,14 +43,13 @@ let addResolversToSchemas = function (contextAdapter){
         const field = current.field;
         let request;
         if (type === 'Query' || type === 'Mutation') {
-            request = (_, atr) => resolversFunctions[field]({...atr, ...contextAdapter});
+            request = (_, atr) => resolversFunctions[field]({...atr, ...context});
             sum[type] = {...sum[type || {}], [field]: request};
         }
         return sum;
     }, {});
 
-
-    const schema = loadSchemaSync([process.cwd()+'/aws.graphql', rootDir+'/graphql/*.graphql'], {
+    const schema = loadSchemaSync([process.cwd() + '/aws.graphql', rootDir + '/graphql/*.graphql'], {
         loaders: [
             new GraphQLFileLoader(),
         ]
@@ -78,12 +60,10 @@ let addResolversToSchemas = function (contextAdapter){
         resolvers,
     });
     return schemaWithResolvers;
-
 };
 
 module.exports.startServer = function () {
-
-    const context = contextAdapterCreate()
+    const context = getContext()
     const schemaWithResolvers = addResolversToSchemas(context);
     server.expressApollo(schemaWithResolvers);
 }
