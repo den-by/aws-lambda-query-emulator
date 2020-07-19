@@ -9,7 +9,6 @@ module.exports.loadSchemaSync = require('@graphql-tools/load').loadSchemaSync;
 module.exports.GraphQLFileLoader = require('@graphql-tools/graphql-file-loader').GraphQLFileLoader;
 module.exports.addResolversToSchema = require('@graphql-tools/schema').addResolversToSchema;
 
-
 let contextAdapterCreate = function () {
     const fs = require('fs');
     const argv = require('minimist')(process.argv.slice(2));
@@ -68,7 +67,7 @@ let addResolversToSchemas = function (contextAdapter){
     }, {});
 
 
-    const schema = loadSchemaSync([rootDir+'/aws.graphql', rootDir+'/graphql/*.graphql'], {
+    const schema = loadSchemaSync([process.cwd()+'/aws.graphql', rootDir+'/graphql/*.graphql'], {
         loaders: [
             new GraphQLFileLoader(),
         ]
@@ -81,7 +80,6 @@ let addResolversToSchemas = function (contextAdapter){
     return schemaWithResolvers;
 
 };
-module.exports.addResolversToSchemas = addResolversToSchemas
 
 module.exports.startServer = function () {
 
