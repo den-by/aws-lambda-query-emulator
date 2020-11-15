@@ -6,7 +6,9 @@ const fs = require('fs');
 const argv = require('minimist')(process.argv.slice(2));
 const rootDir = argv['rootDir'];
 require('dotenv').config({path: rootDir + '/config/env/.env.test'});
-
+// import ROLE_ADMIN from [rootDir+'/helper/role-list.mjs'];
+// const ROLE_ADMIN = require(rootDir+'/helper/role-list.ts');
+// import * as name from '/helper/role-list.mjs';
 const getContext = function () {
     const contextPatch = argv['userType'] === 'purchaser' ? 'tests/test_create_purchaser.json' : 'tests/test_create_user.json';
     const contextJsonString = fs.readFileSync(rootDir + '/' + contextPatch);

@@ -1,4 +1,6 @@
 scalar AWSDateTime
 
+scalar AWSDate
+
 scalar AWSJSON
 
