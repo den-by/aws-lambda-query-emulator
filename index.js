@@ -23,6 +23,7 @@ const addResolversToSchemas = function (context) {
     const path = require('path');
 
     const normalizedPath = path.join(rootDir, 'function/graphql.js');
+    // const normalizedPath = './dist/main.js';
     const exports = require(normalizedPath)
 
     const schema = loadSchemaSync([process.cwd() + '/aws.graphql', rootDir + '/graphql/*.graphql'], {

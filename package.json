@@ -8,7 +8,9 @@
   "main": "index.js",
   "scripts": {
     "startForPurchaser": "node start.js --userType purchaser --rootDir /Users/denis/kaliti/projects/app-sync",
-    "startForUser": "node start.js --userType user --rootDir /Users/denis/kaliti/projects/app-sync"
+    "startForUser": "node start.js --userType user --rootDir /Users/denis/kaliti/projects/app-sync",
+    "build": "webpack --env rootDir='/Users/denis/kaliti/projects/app-sync'",
+    "buildstart": "webpack && node start.js --userType user --rootDir /Users/denis/kaliti/projects/app-sync"
   },
   "author": "",
   "license": "ISC",
@@ -41,6 +43,10 @@
     "yaml": "^1.10.0"
   },
   "devDependencies": {
-    "graphql": "^15.3.0"
+    "@babel/core": "^7.14.0",
+    "@babel/preset-env": "^7.14.0",
+    "babel-loader": "^8.2.2",
+    "graphql": "^15.3.0",
+    "webpack-node-externals": "^3.0.0"
   }
 }
