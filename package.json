@@ -7,8 +7,8 @@
   },
   "main": "index.js",
   "scripts": {
-    "startForPurchaser": "node start.js --userType purchaser",
-    "startForUser": "node start.js --userType user"
+    "startForPurchaser": "node start.js --userType purchaser --rootDir /Users/denis/kaliti/projects/app-sync",
+    "startForUser": "node start.js --userType user --rootDir /Users/denis/kaliti/projects/app-sync"
   },
   "author": "",
   "license": "ISC",
