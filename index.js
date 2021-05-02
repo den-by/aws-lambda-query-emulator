@@ -6,9 +6,6 @@ const fs = require('fs');
 const argv = require('minimist')(process.argv.slice(2));
 const rootDir = argv['rootDir'];
 require('dotenv').config({path: rootDir + '/config/env/.env.test'});
-// import ROLE_ADMIN from [rootDir+'/helper/role-list.mjs'];
-// const ROLE_ADMIN = require(rootDir+'/helper/role-list.ts');
-// import * as name from '/helper/role-list.mjs';
 const getContext = function () {
     const contextPatch = argv['userType'] === 'purchaser' ? 'tests/test_create_purchaser.json' : 'tests/test_create_user.json';
     const contextJsonString = fs.readFileSync(rootDir + '/' + contextPatch);
@@ -22,40 +19,66 @@ const getContext = function () {
 };
 
 const addResolversToSchemas = function (context) {
-    const serverlessString = fs.readFileSync(rootDir + '/serverless.yml', 'utf8');
-    const serverless = require('yaml').parse(serverlessString);
-    const mapping = serverless.custom['appSync']['mappingTemplates'];
 
     const path = require('path');
-    const normalizedPath = path.join(rootDir, 'resolvers');
-    let resolversFunctions = {};
-    fs.readdirSync(normalizedPath).forEach(function (dir) {
-        fs.readdirSync(path.join(normalizedPath, dir)).forEach(function (file) {
-            const patch = normalizedPath + '/' + dir + '/' + file;
-            try {
-                resolversFunctions = {...resolversFunctions, ...require(patch)};
-            } catch (e) {
-                console.log('file not load: ' + patch);
-            }
-        });
-    });
 
-    const resolvers = mapping.reduce(function (sum, current) {
-        const type = current.type;
-        const field = current.field;
-        let request;
-        if (type === 'Query' || type === 'Mutation') {
-            request = (_, atr) => resolversFunctions[field]({...atr, ...context});
-            sum[type] = {...sum[type || {}], [field]: request};
-        }
-        return sum;
-    }, {});
+    const normalizedPath = path.join(rootDir, 'function/graphql.js');
+    const exports = require(normalizedPath)
 
     const schema = loadSchemaSync([process.cwd() + '/aws.graphql', rootDir + '/graphql/*.graphql'], {
         loaders: [
             new GraphQLFileLoader(),
         ]
     });
+
+    const event = {
+        arguments: {},
+        security: {
+            claims: {
+                ['custom:account_id']: context.account_id,
+                ['custom:is_purchaser']: context.is_purchaser
+            }
+        }
+    }
+
+    const handleFunction = async function (...args) {
+        const arg = args[1]
+        const functionName = args[3].fieldName;
+        const handler = exports.handler;
+        const context = {
+            done: function (...args) {
+                const stop = 1;
+            },
+            succeed: function (...args) {
+                const stop = 1;
+            },
+            fail: function (...args) {
+                const stop = 1;
+            },
+            getRemainingTimeInMillis: function (...args) {
+                return 10000;
+            },
+            memoryLimitInMB: function (...args) {
+                return 100;
+            },
+        }
+        const callback = function (...args) {
+            const stop = 1;
+        }
+        return await handler({
+            ...event,
+            field: functionName,
+            arguments: {...event.arguments, ...arg}
+        }, context, callback);
+    }
+
+    const proxy = new Proxy({}, {
+        get(...all) {
+            return handleFunction
+        }
+    });
+
+    const resolvers = {Query: proxy, Mutation: proxy}
 
     const schemaWithResolvers = addResolversToSchema({
         schema,
