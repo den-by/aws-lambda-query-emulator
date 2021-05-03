@@ -1,8 +1,10 @@
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+require('dotenv').config()
+const PROJECT_DIR = process.env['PROJECT_DIR']
 
 module.exports = env => ({
-    entry: env.rootDir + '/function/graphql.js',
+    entry: PROJECT_DIR + '/function/graphql.js',
 
     output: {
         filename: 'main.js',
