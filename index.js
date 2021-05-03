@@ -2,19 +2,20 @@ const {loadSchemaSync} = require('@graphql-tools/load');
 const {GraphQLFileLoader} = require('@graphql-tools/graphql-file-loader');
 const {addResolversToSchema} = require('@graphql-tools/schema');
 const server = require('./server');
+require('dotenv').config()
+const PROJECT_DIR = process.env['PROJECT_DIR']
 const argv = require('minimist')(process.argv.slice(2));
-const rootDir = argv['rootDir'];
-require('dotenv').config({path: rootDir + '/config/env/.env.test'});
+require('dotenv').config({path: PROJECT_DIR + '/config/env/.env.test'});
 
 const addResolversToSchemas = function () {
 
     const path = require('path');
 
-    const normalizedPath =  argv['start_bundle'] ? './dist/main.js' : path.join(rootDir, 'function/graphql.js');
+    const normalizedPath =  argv['start_bundle'] ? './dist/main.js' : path.join(PROJECT_DIR, 'function/graphql.js');
 
     const exports = require(normalizedPath)
 
-    const schema = loadSchemaSync([process.cwd() + '/aws.graphql', rootDir + '/graphql/*.graphql'], {
+    const schema = loadSchemaSync([process.cwd() + '/aws.graphql', PROJECT_DIR + '/graphql/*.graphql'], {
         loaders: [
             new GraphQLFileLoader(),
         ]
