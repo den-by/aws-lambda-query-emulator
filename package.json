@@ -7,10 +7,11 @@
   },
   "main": "index.js",
   "scripts": {
-    "startForPurchaser": "node start.js --userType purchaser --rootDir /Users/denis/kaliti/projects/app-sync",
-    "startForUser": "node start.js --userType user --rootDir /Users/denis/kaliti/projects/app-sync",
+    "startForPurchaser": "node start.js --account_id 66575 --is_purchaser 1 --rootDir /Users/denis/kaliti/projects/app-sync",
+    "startForUser": "node start.js --account_id 66575 --is_purchaser 1 --rootDir /Users/denis/kaliti/projects/app-sync",
     "build": "webpack --env rootDir='/Users/denis/kaliti/projects/app-sync'",
-    "buildstart": "webpack && node start.js --userType user --rootDir /Users/denis/kaliti/projects/app-sync"
+    "buildstartForPurchaser": "webpack --env rootDir='/Users/denis/kaliti/projects/app-sync' && node start.js --start_bundle 1 --account_id 66575 --is_purchaser 1 --rootDir /Users/denis/kaliti/projects/app-sync",
+    "buildstartForUser": "webpack --env rootDir='/Users/denis/kaliti/projects/app-sync' && node start.js --start_bundle 1 --account_id 66575 --is_purchaser 0 --rootDir /Users/denis/kaliti/projects/app-sync"
   },
   "author": "",
   "license": "ISC",
